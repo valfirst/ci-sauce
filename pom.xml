@@ -42,6 +42,7 @@
         <powermock.version>1.6.3</powermock.version>
         <mockito.version>1.10.19</mockito.version>
         <junit.version>4.6</junit.version>
+        <saucerest.version>2.0.0-SNAPSHOT</saucerest.version>
     </properties>
 
     <scm>
@@ -197,7 +198,7 @@
         <dependency>
             <groupId>com.saucelabs</groupId>
             <artifactId>saucerest</artifactId>
-            <version>1.0.28</version>
+            <version>${saucerest.version}</version>
             <scope>compile</scope>
         </dependency>
 

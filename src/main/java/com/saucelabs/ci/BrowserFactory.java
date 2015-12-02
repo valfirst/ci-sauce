@@ -6,6 +6,7 @@
 package com.saucelabs.ci;
 
 import com.saucelabs.saucerest.SauceREST;
+import com.saucelabs.saucerest.objects.Platform;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -138,107 +139,56 @@ public class BrowserFactory {
     }
 
     private List<Browser> initializeSeleniumBrowsers() throws IOException, JSONException {
-        List<Browser> browsers = getSeleniumBrowsersFromSauceLabs();
+        return null;
+/*        List<Browser> browsers = getSeleniumBrowsersFromSauceLabs();
         seleniumLookup = new HashMap<String, Browser>();
         for (Browser browser : browsers) {
             seleniumLookup.put(browser.getKey(), browser);
         }
         lastLookup = new Timestamp(new Date().getTime());
-        return browsers;
+        return browsers;*/
     }
 
     private List<Browser> initializeAppiumBrowsers() throws IOException, JSONException {
-        List<Browser> browsers = getAppiumBrowsersFromSauceLabs();
+        return null;
+
+        /*List<Browser> browsers = getAppiumBrowsersFromSauceLabs();
         appiumLookup = new HashMap<String, Browser>();
         for (Browser browser : browsers) {
             appiumLookup.put(browser.getKey(), browser);
         }
         lastLookup = new Timestamp(new Date().getTime());
-        return browsers;
+        return browsers;*/
     }
 
     private List<Browser> initializeWebDriverBrowsers() throws IOException, JSONException {
-        List<Browser> browsers = getWebDriverBrowsersFromSauceLabs();
+        return null;
+
+        /*List<Browser> browsers = getWebDriverBrowsersFromSauceLabs();
         webDriverLookup = new HashMap<String, Browser>();
         for (Browser browser : browsers) {
             webDriverLookup.put(browser.getKey(), browser);
         }
         lastLookup = new Timestamp(new Date().getTime());
-        return browsers;
+        return browsers;*/
     }
 
-    private List<Browser> getSeleniumBrowsersFromSauceLabs() throws IOException, JSONException {
-        String response = sauceREST.retrieveResults(new URL(BROWSER_URL + "/selenium-rc"));
-        if (response.equals("")) {
-            response = "[]";
-        }
-        List<Browser> browsers = getBrowserListFromJson(response);
-        List<Browser> toRemove = new ArrayList<Browser>();
-        for (Browser browser : browsers) {
-            if (browser.getBrowserName().equals(CHROME)) {
-                toRemove.add(browser);
-            }
-        }
-        for (Browser browser : toRemove) {
-            browsers.remove(browser);
-        }
-        return browsers;
+    private List<Platform> getWebDriverBrowsersFromSauceLabs() {
+        return sauceREST.getSupportedPlatforms("webdriver");
     }
 
-    private List<Browser> getWebDriverBrowsersFromSauceLabs() throws IOException, JSONException {
-        String response = sauceREST.retrieveResults(new URL(BROWSER_URL + "/webdriver"));
-        if (response.equals("")) {
-            response = "[]";
-        }
-        return getBrowserListFromJson(response);
-    }
-
-    private List<Browser> getAppiumBrowsersFromSauceLabs() throws IOException, JSONException {
-        String response = sauceREST.retrieveResults(new URL(BROWSER_URL + "/appium"));
-        if (response.equals("")) {
-            response = "[]";
-        }
-        return getBrowserListFromJson(response);
+    private List<Platform> getAppiumBrowsersFromSauceLabs() throws IOException, JSONException {
+        return sauceREST.getSupportedPlatforms("appium");
     }
 
     public SauceFactory getSauceAPIFactory() {
         return new SauceFactory();
     }
 
-    /**
-     * Parses the JSON response and constructs a List of {@link Browser} instances.
-     *
-     * @param browserListJson JSON response with all browsers
-     * @return List of browser objects
-     * @throws JSONException Invalid JSON
-     */
-    public List<Browser> getBrowserListFromJson(String browserListJson) throws JSONException {
-        List<Browser> browsers = new ArrayList<Browser>();
 
-        JSONArray browserArray = new JSONArray(browserListJson);
-        for (int i = 0; i < browserArray.length(); i++) {
-            JSONObject browserObject = browserArray.getJSONObject(i);
-            String seleniumName = browserObject.getString("api_name");
-            if (seleniumName.equals(IEHTA)) {
-                //exclude these browsers from the list, as they replicate iexplore and firefox
-                continue;
-            }
-            if (browserObject.has("device")) {
-                //appium browser
-                String longName = browserObject.getString("long_name");
-                String longVersion = browserObject.getString("long_version");
-                String osName = browserObject.getString("api_name"); //use api_name instead of os, as os was returning Linux/Mac OS
-                String shortVersion = browserObject.getString("short_version");
-                //set value used for device to be the long name (ie. if device value is 'Nexus7HD', then actually use 'Google Nexus 7 HD Emulator' ​
-                String device = longName;
-
-                String deviceType = null;
-
-                if (browserObject.has("device-type")) {
-                    deviceType = browserObject.getString("device-type");
-                }
-                //iOS devices should include 'Simulator' in the device name (not currently included in the Sauce REST API response.  The platform should also be set to iOS (as per instructions at https://docs.saucelabs.com/reference/platforms-configurator
-                if (device.equalsIgnoreCase("ipad") || device.equalsIgnoreCase("iphone")) {
+    //iOS devices should include 'Simulator' in the device name (not currently included in the Sauce REST API response.
+    // The platform should also be set to iOS (as per instructions at https://docs.saucelabs.com/reference/platforms-configurator
+/* FIXME               if (device.equalsIgnoreCase("ipad") || device.equalsIgnoreCase("iphone")) {
                     device = device + " Simulator";
                     osName = "iOS";
                     //JENKINS-29047 set the browserName to 'Safari'
@@ -250,23 +200,9 @@ public class BrowserFactory {
                 browsers.add(browser);
 
 
-            } else {
-                //webdriver/selenium browser
-                String longName = browserObject.getString("long_name");
-                String longVersion = browserObject.getString("long_version");
-                String osName = browserObject.getString("os");
-                String shortVersion = browserObject.getString("short_version");
-                String browserKey = osName + seleniumName + shortVersion;
-                //replace any spaces with _s
-                browserKey = browserKey.replaceAll(" ", "_");
-                //replace any . with _
-                browserKey = browserKey.replaceAll("\\.", "_");
-                String label = getOperatingSystemName(osName) + " " + longName + " " + shortVersion;
-                browsers.add(new Browser(browserKey, osName, seleniumName, longName, shortVersion, longVersion, label));
-            }
-        }
+
         return browsers;
-    }
+    }*/
 
     /**
      * The Sauce REST API returns the server operating system name (eg. Windows 2003) rather than the public name
