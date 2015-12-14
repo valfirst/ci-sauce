@@ -7,12 +7,8 @@ package com.saucelabs.ci;
 
 import com.saucelabs.saucerest.SauceREST;
 import com.saucelabs.saucerest.objects.Platform;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
@@ -27,8 +23,6 @@ import java.util.logging.Logger;
 public class BrowserFactory {
 
     private static final Logger logger = Logger.getLogger(BrowserFactory.class.getName());
-
-    public static final String BROWSER_URL = "http://saucelabs.com/rest/v1/info/platforms";
 
     public static final int ONE_HOUR_IN_MILLIS = 1000 * 60 * 60;
 
@@ -93,12 +87,10 @@ public class BrowserFactory {
         } catch (IOException e) {
             //TODO exception could mean we're behind firewall
             logger.log(Level.WARNING, "Error retrieving browsers, attempting to continue", e);
-        } catch (JSONException e) {
-            logger.log(Level.WARNING, "Error retrieving browsers, attempting to continue", e);
         }
     }
 
-    public List<Browser> getSeleniumBrowsers() throws IOException, JSONException {
+    public List<Browser> getSeleniumBrowsers() throws IOException {
         List<Browser> browsers;
         if (shouldRetrieveBrowsers()) {
             browsers = initializeSeleniumBrowsers();
@@ -110,7 +102,7 @@ public class BrowserFactory {
         return browsers;
     }
 
-    public List<Browser> getAppiumBrowsers() throws IOException, JSONException {
+    public List<Browser> getAppiumBrowsers() throws IOException {
         List<Browser> browsers;
         if (shouldRetrieveBrowsers()) {
             browsers = initializeAppiumBrowsers();
@@ -122,7 +114,7 @@ public class BrowserFactory {
         return browsers;
     }
 
-    public List<Browser> getWebDriverBrowsers() throws IOException, JSONException {
+    public List<Browser> getWebDriverBrowsers() throws IOException {
         List<Browser> browsers;
         if (shouldRetrieveBrowsers()) {
             browsers = initializeWebDriverBrowsers();
@@ -138,7 +130,7 @@ public class BrowserFactory {
         return lastLookup == null || CacheTimeUtil.pastAcceptableDuration(lastLookup, ONE_HOUR_IN_MILLIS);
     }
 
-    private List<Browser> initializeSeleniumBrowsers() throws IOException, JSONException {
+    private List<Browser> initializeSeleniumBrowsers() throws IOException {
         return null;
 /*        List<Browser> browsers = getSeleniumBrowsersFromSauceLabs();
         seleniumLookup = new HashMap<String, Browser>();
@@ -149,7 +141,7 @@ public class BrowserFactory {
         return browsers;*/
     }
 
-    private List<Browser> initializeAppiumBrowsers() throws IOException, JSONException {
+    private List<Browser> initializeAppiumBrowsers() throws IOException {
         return null;
 
         /*List<Browser> browsers = getAppiumBrowsersFromSauceLabs();
@@ -161,7 +153,7 @@ public class BrowserFactory {
         return browsers;*/
     }
 
-    private List<Browser> initializeWebDriverBrowsers() throws IOException, JSONException {
+    private List<Browser> initializeWebDriverBrowsers() throws IOException {
         return null;
 
         /*List<Browser> browsers = getWebDriverBrowsersFromSauceLabs();
@@ -177,7 +169,7 @@ public class BrowserFactory {
         return sauceREST.getSupportedPlatforms("webdriver");
     }
 
-    private List<Platform> getAppiumBrowsersFromSauceLabs() throws IOException, JSONException {
+    private List<Platform> getAppiumBrowsersFromSauceLabs() throws IOException {
         return sauceREST.getSupportedPlatforms("appium");
     }
 
