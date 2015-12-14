@@ -1,12 +1,11 @@
 package com.saucelabs.ci.sauceconnect;
 
 import com.saucelabs.saucerest.SauceREST;
+import com.saucelabs.saucerest.objects.Tunnel;
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
@@ -58,6 +57,15 @@ public abstract class AbstractSauceTunnelManager implements SauceTunnelManager {
 
     public void setSauceRest(SauceREST sauceRest) {
         this.sauceRest = sauceRest;
+    }
+
+    @NotNull
+    public SauceREST getSauceRest() {
+        if (sauceRest == null) {
+            //TODO how to handle?
+            return new SauceREST(null, null);
+        }
+        return this.sauceRest;
     }
 
     /**
@@ -266,6 +274,7 @@ public abstract class AbstractSauceTunnelManager implements SauceTunnelManager {
         if (sauceRest == null) {
             sauceRest = new SauceREST(username, apiKey);
         }
+
         String identifier = getTunnelIdentifier(options, username);
         TunnelInformation tunnelInformation = getTunnelInformation(identifier);
         try {
@@ -416,33 +425,13 @@ public abstract class AbstractSauceTunnelManager implements SauceTunnelManager {
      * @return String the internal Sauce tunnel id
      */
     private String activeTunnelIdentifier(String username, String identifier) {
-        if (sauceRest == null) {
-            //TODO how to handle?
-            return null;
-        }
-        try {
-            JSONArray tunnelArray = new JSONArray(sauceRest.getTunnels());
-            if (tunnelArray.length() == 0) {
-                //no active tunnels
-                return null;
+        ArrayList<Tunnel> tunnels = getSauceRest().getFullTunnels(username);
+        if (tunnels.size() == 0) { return null; }
+        for(Tunnel t : tunnels)
+        {
+            if (t.isRunning() && identifier.equals(t.getTunnelIdentifier())) {
+                return t.getTunnelIdentifier();
             }
-            //iterate over elements
-            for (int i = 0; i < tunnelArray.length(); i++) {
-                String tunnelId = tunnelArray.getString(i);
-                JSONObject tunnelInformation = new JSONObject(sauceRest.getTunnelInformation(tunnelId));
-                String tunnelIdentifier = tunnelInformation.getString("tunnel_identifier");
-                String status = tunnelInformation.getString("status");
-                if (status.equals("running") &&
-                        (tunnelIdentifier.equals("null") && identifier.equals(username)) ||
-                        !tunnelIdentifier.equals("null") && tunnelIdentifier.equals(identifier)) {
-                    //we have an active tunnel
-                    return tunnelId;
-                }
-
-            }
-        } catch (JSONException e) {
-            //log error and return false
-            julLogger.log(Level.WARNING, "Exception occurred retrieving tunnel information", e);
         }
         return null;
     }
