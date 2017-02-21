@@ -1,6 +1,8 @@
 package com.saucelabs.ci;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openqa.selenium.Platform;
 
 import java.util.Locale;
@@ -215,6 +217,42 @@ public class Browser implements Comparable<Browser> {
 
     public String getLongName() {
         return longName;
+    }
+
+    public JSONObject toJSONString() throws JSONException {
+        JSONObject config = new JSONObject();
+        // selenium
+        config.put("os", this.getOs());
+        // selenium
+        config.put("platform", this.getPlatform().toString());
+
+        // browser is not valid selenium
+        config.put("browser", this.getBrowserName());
+        // browserName is valid selenium
+        config.put("browserName", this.getBrowserName());
+
+        // browser-version is not valid selenium
+        config.put("browser-version", this.getVersion());
+        // version is selenium
+        config.put("version", this.getVersion());
+
+        config.put("long-name", this.getLongName());
+        config.put("long-version", this.getLongVersion());
+
+        if (this.getDevice() != null) {
+            config.put("device", this.getDevice());
+            // selenium key
+            config.put("deviceName", this.getDevice());
+        }
+        if (this.getDeviceType() != null) {
+            config.put("device-type", this.getDeviceType());
+        }
+        if (this.getDeviceOrientation() != null) {
+            config.put("device-orientation", this.getDeviceOrientation());
+            // selenium key
+            config.put("deviceOrientation", this.getDeviceOrientation());
+        }
+        return config;
     }
 
 
