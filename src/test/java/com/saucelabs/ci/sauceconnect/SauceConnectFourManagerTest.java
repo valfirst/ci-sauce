@@ -151,14 +151,14 @@ class SauceConnectFourManagerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "true,  LINUX,   true",
-      "true,  WINDOWS, false",
-      "true,  OSX,     true",
-      "false, LINUX,   true",
-      "false, WINDOWS, false",
-      "false, OSX,     true"
+      "true,  LINUX",
+      "true,  WINDOWS",
+      "true,  OSX",
+      "false, LINUX",
+      "false, WINDOWS",
+      "false, OSX"
   })
-  void testExtractZipFile(boolean cleanUpOnExit, OperatingSystem operatingSystem, boolean executable,
+  void testExtractZipFile(boolean cleanUpOnExit, OperatingSystem operatingSystem,
       @TempDir Path folder) throws IOException {
     String osName = operatingSystem.name().toLowerCase(Locale.ROOT);
     File destination = folder.resolve("sauceconnect_" + osName).toFile();
@@ -170,8 +170,7 @@ class SauceConnectFourManagerTest {
     File expectedBinaryPath = new File(destination, operatingSystem.getDirectory(false));
     File expectedBinaryFile = new File(expectedBinaryPath, operatingSystem.getExecutable());
     assertTrue(expectedBinaryFile.exists(), () -> osName + " binary exists at " + expectedBinaryFile);
-    assertEquals(executable, expectedBinaryFile.canExecute(),
-        () -> osName + " binary " + expectedBinaryFile + " is executable");
+    assertTrue(expectedBinaryFile.canExecute(), () -> osName + " binary " + expectedBinaryFile + " is executable");
   }
 
   @Test

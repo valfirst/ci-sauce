@@ -334,12 +334,11 @@ public class SauceConnectFourManager extends AbstractSauceTunnelManager
     if (cleanUpOnExit) {
       unzipDir.deleteOnExit();
     }
-    if (operatingSystem != OperatingSystem.WINDOWS) {
-      File sauceConnectBinary = new File(unzipDir, operatingSystem.getExecutable());
-      if (!sauceConnectBinary.canExecute() && !sauceConnectBinary.setExecutable(true)) {
-        LOGGER.warn("Unable to set the execute permission for SauceConnect binary file located at {}",
-            sauceConnectBinary);
-      }
+
+    File sauceConnectBinary = new File(unzipDir, operatingSystem.getExecutable());
+    if (!sauceConnectBinary.canExecute() && !sauceConnectBinary.setExecutable(true)) {
+      LOGGER.warn("Unable to set the execute permission for SauceConnect binary file located at {}",
+          sauceConnectBinary);
     }
     return unzipDir;
   }
